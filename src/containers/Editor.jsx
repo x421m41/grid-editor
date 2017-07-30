@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import GridView from '../components/GridView'
 import { StyleSheet, css } from 'aphrodite';
+
+import GridView from '../components/GridView'
+import GridDrawer from '../components/GridDrawer'
 
 class Editor extends Component {
 
@@ -13,7 +15,12 @@ class Editor extends Component {
   render () {
     return (
       <div>
-        <GridView gridid={this.id}/>
+        <div className={css(styles.base)}>
+          <GridView gridid={this.id} loading={this.props.loading}/>
+        </div>
+        <div className={css(styles.base, styles.editor)}>
+          <GridDrawer />
+        </div>
       </div>
     )
   }
@@ -27,9 +34,14 @@ const gridDataList = ['grid1.json', 'grid2.json']
 
 const styles = StyleSheet.create({
   base: {
-    width: 400,
-    height: 400,
-    overflowX: 'scroll'
+    display: 'inline-block'
+  },
+  editor: {
+    position: 'fixed',
+    right: 0,
+    top: 60,
+    width: 300,
+    height: '100%'
   }
 });
 

@@ -14,8 +14,16 @@ class GridView extends Component {
     console.log(`/griddata/grid${this.props.gridid}.json`)
     fetch(`/griddata/grid${this.props.gridid}.json`)
       .then(res => res.json())
-      .then(json =>  this.setState({griddata: json}));
-    this.paint();
+      .then(json => {
+        this.setState({griddata: json})
+        this.ctx = this.canvas.getContext('2d');
+        this.offscreen = document.createElement('canvas');
+        this.offscreen.width = 600;
+        this.offscreen.height = 600;
+        this.offscreen_ctx = this.offscreen.getContext('2d');
+        this.paint();
+        this.props.loading(false);
+      });
   }
 
   componentDidUpdate() {
@@ -25,57 +33,54 @@ class GridView extends Component {
   paint() {
     const cellWidth = 20;
     const cellHeight = 20;
-
-    const ctx = this.canvas.getContext('2d');
-
     let x = 0;
     let y = 0;
 
     for (const row of this.state.griddata) {
       for (const cell of row) {
-        this.paintCell(ctx, x, y, cellWidth, cellHeight, this.colors[cell.color]);
+        this.paintCell(this.offscreen_ctx, x, y, cellWidth, cellHeight, this.colors[cell.color]);
         x = x + cellWidth;
       }
       y = y + cellHeight;
       x = 0;
     }
+    this.ctx.drawImage(this.offscreen, 0, 0);
   }
 
   paintCell(ctx, x, y, width, height, color) {
     const range = {left: x, right: x + width, top: y, bottom: y + height};
-    ctx.globalAlpha = 1;
     ctx.fillStyle = color;
     ctx.fillRect(x, y, width, height);
     if (this.isSelected(range, this.state.selectedRange)) {
       ctx.globalAlpha = 0.5;
       ctx.fillStyle = '#ffff00';
       ctx.fillRect(x, y, width, height);
+      ctx.globalAlpha = 1;
     }
   }
 
   isSelected(rectA, rectB) {
-    return rectA.left < rectB.right && rectA.right > rectB.left &&
-           rectA.top < rectB.bottom && rectA.bottom > rectB.top ;
+    return rectA.left <= rectB.right && rectA.right >= rectB.left &&
+           rectA.top <= rectB.bottom && rectA.bottom >= rectB.top ;
   }
 
   handleMouseDown(e) {
     if (e.button === 0) {
       this.mouseDown = true;
       this.mouseMove = false;
-      const x = e.clientX;
-      const y = e.clientY;
+      const {x, y} = this.getMousePos(e);
       this.mouseDownPos = {x, y};
-      console.log('left button down');
     }
   }
 
   handleMouseMove(e) {
     if (this.mouseDown) {
       this.mouseMove = true;
-      const left = Math.min(this.mouseDownPos.x, e.clientX);
-      const right = Math.max(this.mouseDownPos.x, e.clientX);
-      const top = Math.min(this.mouseDownPos.y, e.clientY);
-      const bottom = Math.max(this.mouseDownPos.y, e.clientY);
+      const {x, y} = this.getMousePos(e);
+      const left = Math.min(this.mouseDownPos.x, x);
+      const right = Math.max(this.mouseDownPos.x, x);
+      const top = Math.min(this.mouseDownPos.y, y);
+      const bottom = Math.max(this.mouseDownPos.y, y);
       this.setState({selectedRange: {left, right, top, bottom}})
     }
   }
@@ -83,12 +88,21 @@ class GridView extends Component {
   handleMouseUp(e) {
     this.mouseDown = false;
     if (!this.mouseMove) {
-      const left = e.clientX;
-      const right = e.clientX;
-      const top = e.clientY;
-      const bottom = e.clientY;
+      const {x, y} = this.getMousePos(e);
+      const left = x;
+      const right = x;
+      const top = y;
+      const bottom = y;
       this.setState({selectedRange: {left, right, top, bottom}})
     }
+  }
+
+  getMousePos(e) {
+      var rect = this.canvas.getBoundingClientRect();
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
   }
 
   render() {
@@ -100,7 +114,8 @@ class GridView extends Component {
         onMouseDown={ e => this.handleMouseDown(e) }
         onMouseMove={ e => this.handleMouseMove(e) }
         onMouseUp={ e => this.handleMouseUp(e) }
-        />
+        style={{cursor: 'default'}}
+      />
     );
   }
 }
