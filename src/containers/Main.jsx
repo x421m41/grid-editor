@@ -15,7 +15,7 @@ class Main extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {muiTheme: {}, loading: true};
+    this.state = {muiTheme: {}};
   }
 
   componentWillMount() {
@@ -93,12 +93,7 @@ class Main extends Component {
     return styles;
   }
 
-  handleLoading = (loading) => {
-    this.setState({loading: loading});
-  }
-
   render() {
-
     const { prepareStyles } = this.state.muiTheme;
     const { children } = this.props;
     const styles = this.getStyles();
@@ -108,7 +103,7 @@ class Main extends Component {
           style={styles.appBar}
         />
         {
-          this.state.loading &&
+          this.props.loading &&
           <LinearProgress
             style={styles.progress}
             color={pinkA200}
@@ -135,13 +130,9 @@ Main.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    loading: state.loading
+    loading: state.mainAction.loading
   }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  ...bindActionCreators(MainActions, dispatch),
-})
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Main));
+export default connect(mapStateToProps)(Main);
 

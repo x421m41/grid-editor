@@ -7,7 +7,8 @@ import Subheader from 'material-ui/Subheader';
 import {List, ListItem} from 'material-ui/List';
 import { StyleSheet, css } from 'aphrodite';
 
-import * as GridActions from '../actions/GridActions.js'
+import * as MainActions from '../actions/MainActions'
+import * as GridActions from '../actions/GridActions'
 
 class GridList extends Component {
 
@@ -16,14 +17,18 @@ class GridList extends Component {
     console.log(props);
     const gridList = [];
     this.state = {redirect: false, gridList};
-    this.handleClick = this.handleClick.bind(this);
+  }
+
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   componentDidMount() {
     fetch('/griddata/grid-list.json')
       .then(res => res.json())
       .then(json => {
-        this.setState({gridList: json})
+        this.setState({gridList: json});
+        this.props.changeLoading(false);
     });
   }
 
@@ -44,7 +49,7 @@ class GridList extends Component {
             </p>
           }
           secondaryTextLines={2}
-          onClick={this.handleClick.bind(this, grid.id)}
+          onClick={() => this.handleClick(grid.id)}
         />
 
       gridList.push(listItem);
@@ -85,8 +90,12 @@ function mapState(state) {
 
 function mapDispatch(dispatch) {
   return {
-    actions: bindActionCreators(GridActions, dispatch)
+    actions: bindActionCreators(MainActions, dispatch)
   };
 }
 
-export default connect(mapState, mapDispatch)(GridList);
+const mapDispatchToProps = (dispatch) => ({
+  ...bindActionCreators(MainActions, dispatch),
+})
+
+export default connect(mapState, mapDispatchToProps)(GridList);

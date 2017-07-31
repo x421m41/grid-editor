@@ -16,14 +16,13 @@ class GridView extends Component {
       .then(res => res.json())
       .then(json => {
         this.setState({griddata: json})
-        this.ctx = this.canvas.getContext('2d');
-        this.offscreen = document.createElement('canvas');
-        this.offscreen.width = 600;
-        this.offscreen.height = 600;
-        this.offscreen_ctx = this.offscreen.getContext('2d');
         this.paint();
-        this.props.loading(false);
       });
+    this.ctx = this.canvas.getContext('2d');
+    this.offscreen = document.createElement('canvas');
+    this.offscreen.width = 600;
+    this.offscreen.height = 600;
+    this.offscreen_ctx = this.offscreen.getContext('2d');
   }
 
   componentDidUpdate() {

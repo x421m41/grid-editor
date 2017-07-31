@@ -1,4 +1,4 @@
-import {CHANGE_SELECTION, CHANGE_STATE} from '../constants/ActionTypes';
+import {CHANGE_SELECTION, CHANGE_STATE, CHANGE_LOADING} from '../constants/ActionTypes';
 
 const initialState = {x: -1, y: -1, width: -1, height: -1}
 
