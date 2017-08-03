@@ -14,9 +14,8 @@ class GridList extends Component {
 
   constructor(props) {
     super(props);
-    console.log(props);
-    const gridList = [];
-    this.state = {redirect: false, gridList};
+    this.changeLoading = props.changeLoading;
+    this.state = {redirect: false, gridList: []};
   }
 
   sleep(ms) {
@@ -28,7 +27,7 @@ class GridList extends Component {
       .then(res => res.json())
       .then(json => {
         this.setState({gridList: json});
-        this.props.changeLoading(false);
+        this.changeLoading(false);
     });
   }
 
@@ -37,9 +36,9 @@ class GridList extends Component {
   }
 
   render() {
-    let gridList = [];
-    for (const grid of this.state.gridList) {
-      const listItem = <ListItem
+    let gridList = this.state.gridList.map(grid => {
+      return (
+        <ListItem
           key={grid.id}
           primaryText={grid.name}
           secondaryText={
@@ -50,10 +49,8 @@ class GridList extends Component {
           }
           secondaryTextLines={2}
           onClick={() => this.handleClick(grid.id)}
-        />
-
-      gridList.push(listItem);
-    }
+        />)
+    });
 
     return (
       <div className={css(styles.base)}>
@@ -85,12 +82,6 @@ const styles = StyleSheet.create({
 function mapState(state) {
   return {
     todos: state.todos
-  };
-}
-
-function mapDispatch(dispatch) {
-  return {
-    actions: bindActionCreators(MainActions, dispatch)
   };
 }
 

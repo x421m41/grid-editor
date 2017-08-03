@@ -1,12 +1,25 @@
-import {CHANGE_SELECTION, CHANGE_STATE, CHANGE_LOADING} from '../constants/ActionTypes';
+import {CHANGE_SELECTION, CHANGE_STATE, CHANGE_LOADING, CHANGE_GRIDDATA} from '../constants/ActionTypes';
 
-const initialState = {x: -1, y: -1, width: -1, height: -1}
+const initialState = {
+  gridData: {},
+  selectionBound: {}
+}
 
 export default function gridEdit(state = initialState, action) {
   switch (action.type) {
     case CHANGE_SELECTION:
-      const {x, y, width, height} = action;
-      return {x, y, width, height};
+      return {
+        selectionBound: {
+          ...action
+        }
+      };
+    case CHANGE_GRIDDATA:
+      console.log('CHANGE_GRIDDATA');
+      console.log(action.gridData);
+      console.log('CHANGE_GRIDDATA');
+      return {
+        gridData: action.gridData
+      }
     default:
       return state;
   }

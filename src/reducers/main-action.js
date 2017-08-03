@@ -1,12 +1,13 @@
 import {CHANGE_LOADING} from '../constants/ActionTypes'
 
-const mainActionInitialState = {loading: true};
-const mainAction = (state = mainActionInitialState, action) => {
+const initialState = {
+  loading: true
+};
+
+const mainAction = (state = initialState, action) => {
   switch (action.type) {
     case CHANGE_LOADING:
-      const newState = {loading: action.loading};
-      console.log(newState);
-      return newState;
+      return {loading: action.loading};
     default:
       return state
   }

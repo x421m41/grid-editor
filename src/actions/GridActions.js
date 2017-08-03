@@ -10,3 +10,10 @@ export function changeSelection(bounds) {
     height
   };
 };
+
+export function changeGridData(gridData) {
+  return {
+    type: types.CHANGE_GRIDDATA,
+    gridData
+  }
+}

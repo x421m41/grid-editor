@@ -1,28 +1,44 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import GridRow from './GridRow'
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import _ from 'lodash';
+
+import {changeGridData} from '../actions/GridActions';
 
 class GridView extends Component {
 
-  constructor() {
-    super();
-    this.state = {griddata: [], selectedRange: {}};
+  static propTypes = {
+    gridId: PropTypes.string.isRequired,
+    changeLoading: PropTypes.func.isRequired,
+    changeGridData: PropTypes.func.isRequired,
+    gridData: PropTypes.array
+  }
+
+  constructor(props) {
+    super(props);
+    this.changeLoading = props.changeLoading;
+    this.changeGridData = props.changeGridData;
+    this.state = {selectedRange: {}};
+    this.gridId = props.gridId;
+    this.gridData = props.gridData;
     this.colors = { 'white': '#ffffff', 'blue': '#0000ff', 'red': '#ff0000' }
   }
 
   componentDidMount() {
-    console.log(`/griddata/grid${this.props.gridid}.json`)
-    fetch(`/griddata/grid${this.props.gridid}.json`)
-      .then(res => res.json())
-      .then(json => {
-        this.setState({griddata: json})
-        this.paint();
-      });
+    console.log(`/griddata/grid${this.gridId}.json`)
+    this.changeLoading(true);
     this.ctx = this.canvas.getContext('2d');
     this.offscreen = document.createElement('canvas');
     this.offscreen.width = 600;
     this.offscreen.height = 600;
     this.offscreen_ctx = this.offscreen.getContext('2d');
+    fetch(`/griddata/grid${this.gridId}.json`)
+      .then(res => res.json())
+      .then(json => {
+        this.changeGridData(json)
+        this.changeLoading(false);
+      });
   }
 
   componentDidUpdate() {
@@ -35,7 +51,10 @@ class GridView extends Component {
     let x = 0;
     let y = 0;
 
-    for (const row of this.state.griddata) {
+    console.log(this.gridData);
+    if (_.isEmpty(this.gridData)) return;
+
+    for (const row of this.gridData) {
       for (const cell of row) {
         this.paintCell(this.offscreen_ctx, x, y, cellWidth, cellHeight, this.colors[cell.color]);
         x = x + cellWidth;
@@ -119,8 +138,17 @@ class GridView extends Component {
   }
 }
 
-GridView.propTypes = {
+const mapStateToProps = (state) => {
+  console.log('mapStateToProps');
+  console.log(state);
+  console.log('mapStateToProps');
+  return {
+    gridData: state.gridEditor.gridData
+  }
+}
 
-};
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators({changeGridData}, dispatch);
+}
 
-export default GridView;
+export default connect(mapStateToProps, mapDispatchToProps)(GridView);
