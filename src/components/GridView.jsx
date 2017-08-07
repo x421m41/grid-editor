@@ -39,12 +39,10 @@ class GridView extends PureComponent {
   }
 
   componentDidUpdate() {
-    console.log('componentDidUpdate');
     this.paint();
   }
 
   paint() {
-    console.log('paint');
     if (_.isEmpty(this.props.gridData)) return;
 
     const cellWidth = this.gridInfo.cellWidth;
@@ -146,7 +144,6 @@ class GridView extends PureComponent {
   }
 
   render() {
-    console.log('render');
     return (
       <canvas
         ref={canvas => this.canvas = canvas}
@@ -162,7 +159,6 @@ class GridView extends PureComponent {
 }
 
 const mapStateToProps = (state) => {
-  console.log('mapStateToProps');
   return {
     selectionBound: state.gridEditor.selectionBound,
     gridData: state.gridEditor.gridData
@@ -170,7 +166,6 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-  console.log('mapDispatchToProps');
   return bindActionCreators({changeGridData, changeSelection}, dispatch);
 }
 
