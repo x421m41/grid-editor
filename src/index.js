@@ -23,6 +23,4 @@ if (module.hot) {
   });
 }
 
-
-
 registerServiceWorker();
