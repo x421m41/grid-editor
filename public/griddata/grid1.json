@@ -2,7 +2,7 @@
   "gridInfo": {
     "cellWidth": 20,
     "cellHeight": 20,
-    "state": { "blank": "#ffffff", "A": "#0000ff", "@": "#ff0000", "V": "#ff9999" }
+    "state": { "blank": "#ffffff", "A": "#2962FF", "@": "#D50000", "V": "#F8BBD0" }
   },
   "gridData" :[
     [

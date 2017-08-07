@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {Tabs, Tab} from 'material-ui/Tabs';
+import RaisedButton from 'material-ui/RaisedButton';
 
 class GridEditor extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {value: 'good'};
+    this.state = {value: 'dark'};
   }
 
   handleChange = (value) => {
@@ -21,9 +22,10 @@ class GridEditor extends Component {
         value={this.state.value}
         onChange={this.handleChange}
       >
-        <Tab label="Good" value="good">
+        <Tab label="ChangeDark" value="dark">
+          <RaisedButton label="Dark" style={style} />
         </Tab>
-        <Tab label="Bad" value="bad">
+        <Tab label="ChangeColor" value="color">
         </Tab>
       </Tabs>
     );
@@ -32,6 +34,10 @@ class GridEditor extends Component {
 
 GridEditor.propTypes = {
 
+};
+
+const style = {
+  margin: 12,
 };
 
 export default GridEditor;

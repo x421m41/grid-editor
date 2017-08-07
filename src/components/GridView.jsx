@@ -52,7 +52,7 @@ class GridView extends PureComponent {
     let columnCount = 0;
     let rowCount = 0;
 
-    this.ctx.fillStyle = '#DDDDDD';
+    this.ctx.fillStyle = '#EEEEEE';
     this.ctx.fillRect(0, 0, 800, 800);
 
     for (const row of this.props.gridData) {
@@ -62,7 +62,7 @@ class GridView extends PureComponent {
         this.ctx.fillRect(x, y, cellWidth, cellHeight);
         if (this.isSelected(columnCount, rowCount)) {
           this.ctx.globalAlpha = 0.5;
-          this.ctx.fillStyle = '#ffff00';
+          this.ctx.fillStyle = '#FFD600';
           this.ctx.fillRect(x, y, cellWidth, cellHeight);
           this.ctx.globalAlpha = 1;
         }
@@ -73,6 +73,20 @@ class GridView extends PureComponent {
       x = 0;
       ++rowCount;
       columnCount = 0;
+    }
+    this.ctx.strokeStyle = '#BDBDBD';
+    this.ctx.lineWidth = 1.0;
+    for (let x = 0.5; x < 800; x += cellWidth) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(x, 0);
+      this.ctx.lineTo(x, 800);
+      this.ctx.stroke();
+    }
+    for (let y = 0.5; y < 800; y += cellHeight) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, y);
+      this.ctx.lineTo(800, y);
+      this.ctx.stroke();
     }
   }
 
