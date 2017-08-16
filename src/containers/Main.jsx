@@ -2,13 +2,10 @@ import AppBar from 'material-ui/AppBar'
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import spacing from 'material-ui/styles/spacing';
 import {darkWhite, lightWhite, grey900, pinkA200} from 'material-ui/styles/colors';
-import withWidth, {MEDIUM, LARGE} from 'material-ui/utils/withWidth';
+import {MEDIUM, LARGE} from 'material-ui/utils/withWidth';
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import LinearProgress from 'material-ui/LinearProgress';
-import * as MainActions from '../actions/MainActions'
 import { withRouter } from 'react-router-dom';
 
 class Main extends Component {
@@ -42,11 +39,14 @@ class Main extends Component {
         height: 40,
       },
       appBar: {
+        position: 'fixed',
         zIndex: this.state.muiTheme.zIndex.appBar + 1,
+        top: 0
       },
       progress: {
       },
       root: {
+        paddingTop: spacing.desktopKeylineIncrement,
         minHeight: 400
       },
       content: {
@@ -124,13 +124,9 @@ class Main extends Component {
   }
 }
 
-Main.propTypes = {
-
-};
-
 const mapStateToProps = (state) => {
   return {
-    loading: state.mainAction.loading
+    loading: state.main.loading
   }
 }
 

@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux';
-import gridEditor from './grid-edit';
-import mainAction from './main-action'
+import grid from './GridEditor';
+import main from './MainAction'
 
 const rootReducer = combineReducers({
-  mainAction,
-  gridEditor
+  main,
+  grid
 });
 
 export default rootReducer;

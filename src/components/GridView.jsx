@@ -1,41 +1,29 @@
-import React, { PureComponent } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
 import _ from 'lodash';
 
-import {changeGridData, changeSelection} from '../actions/GridActions';
-
-class GridView extends PureComponent {
+class GridView extends Component {
 
   static propTypes = {
-    gridId: PropTypes.string.isRequired,
-    changeLoading: PropTypes.func.isRequired,
-    changeGridData: PropTypes.func.isRequired,
-    changeSelection: PropTypes.func.isRequired,
-    selectionBound: PropTypes.object,
-    gridData: PropTypes.array
+    gridData: PropTypes.object.isRequired,
+    onChangeSelectionBound: PropTypes.func.isRequired
   }
 
   constructor(props) {
     super(props);
-    this.changeLoading = props.changeLoading;
-    this.changeGridData = props.changeGridData;
-    this.changeSelection = props.changeSelection;
-    this.gridId = props.gridId;
-    this.gridInfo = {};
+    this.cellWidth = 0;
+    this.cellHeight = 0;
+    this.selectionBound = {
+      left: -1,
+      right: -1,
+      top: -1,
+      bottom: -1
+    };
   }
 
   componentDidMount() {
-    this.changeLoading(true);
     this.ctx = this.canvas.getContext('2d');
-    fetch(`/griddata/grid${this.gridId}.json`)
-      .then(res => res.json())
-      .then(json => {
-        this.gridInfo = json.gridInfo;
-        this.changeGridData(json.gridData)
-        this.changeLoading(false);
-      });
+    this.paint();
   }
 
   componentDidUpdate() {
@@ -43,28 +31,37 @@ class GridView extends PureComponent {
   }
 
   paint() {
-    if (_.isEmpty(this.props.gridData)) return;
+    const { gridData } = this.props;
 
-    const cellWidth = this.gridInfo.cellWidth;
-    const cellHeight = this.gridInfo.cellHeight;
+    this.ctx.fillStyle = '#EEEEEE';
+    this.ctx.fillRect(0, 0, 800, 800);
+
+    if (_.isEmpty(gridData)) return;
+
+    this.paintCell();
+    this.paintGrid();
+  }
+
+  paintCell() {
+    const { gridData } = this.props;
+    const {cellWidth, cellHeight} = gridData.info;
+    const ctx = this.ctx;
+
     let x = 0;
     let y = 0;
     let columnCount = 0;
     let rowCount = 0;
 
-    this.ctx.fillStyle = '#EEEEEE';
-    this.ctx.fillRect(0, 0, 800, 800);
-
-    for (const row of this.props.gridData) {
+    for (const row of gridData.map) {
       for (const cell of row) {
-        const color = this.gridInfo.state[cell.state];
-        this.ctx.fillStyle = color;
-        this.ctx.fillRect(x, y, cellWidth, cellHeight);
+        const color = gridData.info.state[cell.state];
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, cellWidth, cellHeight);
         if (this.isSelected(columnCount, rowCount)) {
-          this.ctx.globalAlpha = 0.5;
-          this.ctx.fillStyle = '#FFD600';
-          this.ctx.fillRect(x, y, cellWidth, cellHeight);
-          this.ctx.globalAlpha = 1;
+          ctx.globalAlpha = 0.5;
+          ctx.fillStyle = '#FFD600';
+          ctx.fillRect(x, y, cellWidth, cellHeight);
+          ctx.globalAlpha = 1;
         }
         x = x + cellWidth;
         ++columnCount;
@@ -74,46 +71,59 @@ class GridView extends PureComponent {
       ++rowCount;
       columnCount = 0;
     }
-    this.ctx.strokeStyle = '#BDBDBD';
-    this.ctx.lineWidth = 1.0;
+  }
+
+  paintGrid() {
+    const ctx = this.ctx;
+    const {cellWidth, cellHeight} = this.props.gridData.info;
+
+    ctx.strokeStyle = '#9E9E9E';
+    ctx.lineWidth = 1.0;
     for (let x = 0.5; x < 800; x += cellWidth) {
-      this.ctx.beginPath();
-      this.ctx.moveTo(x, 0);
-      this.ctx.lineTo(x, 800);
-      this.ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, 800);
+      ctx.stroke();
     }
     for (let y = 0.5; y < 800; y += cellHeight) {
-      this.ctx.beginPath();
-      this.ctx.moveTo(0, y);
-      this.ctx.lineTo(800, y);
-      this.ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(800, y);
+      ctx.stroke();
     }
   }
 
   isSelected(column, row) {
-    const {left, right, top, bottom} = this.props.selectionBound;
+    const {left, right, top, bottom} = this.selectionBound;
     return column >= left && column <= right &&
            row >= top && row <= bottom;
   }
 
-  dispatchIfSelectionChanged(left, right, top, bottom) {
+  paintIfSelectionChanged(left, right, top, bottom) {
+    const {cellWidth, cellHeight} = this.props.gridData.info;
+
+    if (cellWidth === 0 || cellHeight === 0)
+      return;
+
     const current = {
-      left: Math.floor(left / this.gridInfo.cellWidth),
-      right: Math.floor(right / this.gridInfo.cellWidth),
-      top: Math.floor(top / this.gridInfo.cellHeight),
-      bottom: Math.floor(bottom / this.gridInfo.cellHeight)
+      left: Math.floor(left / cellWidth),
+      right: Math.floor(right / cellWidth),
+      top: Math.floor(top / cellHeight),
+      bottom: Math.floor(bottom / cellHeight)
     }
 
-    if (!this.isSameBound(this.props.selectionBound, current)) {
-      this.props.changeSelection(current)
+    if (!this.isSameBound(this.selectionBound, current)) {
+      this.selectionBound = current;
+      this.props.onChangeSelectionBound(current);
+      this.paint();
     }
   }
 
   isSameBound(boundA, boundB) {
-    return boundA.left == boundB.left &&
-           boundA.right == boundB.right &&
-           boundA.top == boundB.top &&
-           boundA.bottom == boundB.bottom;
+    return boundA.left === boundB.left &&
+           boundA.right === boundB.right &&
+           boundA.top === boundB.top &&
+           boundA.bottom === boundB.bottom;
   }
 
   handleMouseDown(e) {
@@ -133,7 +143,7 @@ class GridView extends PureComponent {
       const right = Math.max(this.mouseDownPos.x, x);
       const top = Math.min(this.mouseDownPos.y, y);
       const bottom = Math.max(this.mouseDownPos.y, y);
-      this.dispatchIfSelectionChanged(left, right, top, bottom);
+      this.paintIfSelectionChanged(left, right, top, bottom);
     }
   }
 
@@ -145,7 +155,7 @@ class GridView extends PureComponent {
       const right = x;
       const top = y;
       const bottom = y;
-      this.dispatchIfSelectionChanged(left, right, top, bottom);
+      this.paintIfSelectionChanged(left, right, top, bottom);
     }
   }
 
@@ -172,15 +182,4 @@ class GridView extends PureComponent {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    selectionBound: state.gridEditor.selectionBound,
-    gridData: state.gridEditor.gridData
-  }
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({changeGridData, changeSelection}, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(GridView);
+export default GridView;

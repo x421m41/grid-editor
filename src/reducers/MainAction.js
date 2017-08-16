@@ -4,7 +4,7 @@ const initialState = {
   loading: true
 };
 
-const mainAction = (state = initialState, action) => {
+const main = (state = initialState, action) => {
   switch (action.type) {
     case CHANGE_LOADING:
       return {loading: action.loading};
@@ -13,4 +13,4 @@ const mainAction = (state = initialState, action) => {
   }
 }
 
-export default mainAction;
+export default main;

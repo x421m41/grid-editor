@@ -1,10 +1,10 @@
 {
-  "gridInfo": {
+  "info": {
     "cellWidth": 20,
     "cellHeight": 20,
     "state": { "blank": "#ffffff", "A": "#2962FF", "@": "#D50000", "V": "#F8BBD0" }
   },
-  "gridData" :[
+  "map" :[
     [
       { "state": "blank" },
       { "state": "blank" },

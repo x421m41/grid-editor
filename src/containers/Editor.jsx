@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, css } from 'aphrodite';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import {StyleSheet, css} from 'aphrodite';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
 
-import * as MainActions from '../actions/MainActions'
+import {changeLoading} from '../actions/MainActions'
+import {changeGridData, changeSelection, changeState} from '../actions/GridActions';
+
 import GridView from '../components/GridView'
 import GridDrawer from '../components/GridDrawer'
 
@@ -12,46 +14,87 @@ class Editor extends Component {
 
   static propTypes = {
     changeLoading: PropTypes.func.isRequired,
+    changeGridData: PropTypes.func.isRequired,
+    changeSelection: PropTypes.func.isRequired,
+    changeState: PropTypes.func.isRequired,
+    selectionBound: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired
   }
 
+  static styles = StyleSheet.create({
+    base: {
+      display: 'inline-block'
+    },
+    editor: {
+      position: 'fixed',
+      right: 0,
+      top: 64,
+      width: 300,
+      height: '100%'
+    }
+  });
+
   constructor(props) {
     super(props);
-    this.id = props.match.params.id;
-    this.changeLoading = props.changeLoading;
+    this.gridId = props.match.params.id;
+    this.gridData = {};
   }
 
-  render () {
+  handleChangeState = (state) => {
+    this.props.changeState(state);
+  }
+
+  handleSaveState = () => {
+
+  }
+
+  componentDidMount() {
+    const {changeLoading, changeGridData} = this.props;
+    changeLoading(true);
+    fetch(`/griddata/grid${this.gridId}.json`)
+      .then(res => res.json())
+      .then(gridData => {
+        changeGridData(gridData)
+        changeLoading(false);
+      });
+  }
+
+  render() {
+    const {gridData, changeSelection, selectionBound} = this.props;
+
     return (
       <div>
-        <div className={css(styles.base)}>
-          <GridView gridId={this.id} changeLoading={this.changeLoading}/>
+        <div className={css(Editor.styles.base)}>
+          <GridView
+            gridData={gridData}
+            onChangeSelectionBound={changeSelection}/>
         </div>
-        <div className={css(styles.base, styles.editor)}>
-          <GridDrawer />
+        <div className={css(Editor.styles.base, Editor.styles.editor)}>
+          <GridDrawer
+            gridInfo={gridData.info}
+            selectionBound={selectionBound}
+            handleChangeState={this.handleChangeState}
+            onSaveClicked={this.handleSaveState}/>
         </div>
       </div>
     )
   }
 }
 
-const gridDataList = ['grid1.json', 'grid2.json']
-
-const styles = StyleSheet.create({
-  base: {
-    display: 'inline-block'
-  },
-  editor: {
-    position: 'fixed',
-    right: 0,
-    top: 60,
-    width: 300,
-    height: '100%'
-  }
-});
-
 const mapDispatchToProps = (dispatch) => ({
-  ...bindActionCreators(MainActions, dispatch),
+  ...bindActionCreators({
+    changeLoading,
+    changeGridData,
+    changeSelection,
+    changeState
+  }, dispatch)
 })
 
-export default connect(null, mapDispatchToProps)(Editor);
+const mapStateToProps = (state) => {
+  return {
+    gridData: state.grid.gridData,
+    selectionBound: state.grid.selectionBound
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Editor);

@@ -2,13 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom'
 import Subheader from 'material-ui/Subheader';
 import {List, ListItem} from 'material-ui/List';
 import { StyleSheet, css } from 'aphrodite';
 
 import * as MainActions from '../actions/MainActions'
-import * as GridActions from '../actions/GridActions'
 
 class GridList extends Component {
 

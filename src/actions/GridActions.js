@@ -13,3 +13,10 @@ export function changeGridData(gridData) {
     gridData
   }
 }
+
+export function changeState(state) {
+  return {
+    type: types.CHANGE_STATE,
+    state
+  }
+}
