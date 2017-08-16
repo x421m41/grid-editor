@@ -44,7 +44,7 @@ class StateEditor extends Component {
                   value={index}
                   primaryText={text}
                   leftIcon={
-                    <SquareIcon color={color} style = {style.icon} />
+                    <SquareIcon color={color} style = {styles.icon} />
                   }
                 />;
         });
@@ -57,21 +57,21 @@ class StateEditor extends Component {
           <RaisedButton
             label="Dark"
             onClick={this.handleChangeDarkClick}
-            style={style.innterTabButton} />
+            style={styles.innterTabButton} />
           <RaisedButton
             label="Save"
             onClick={this.props.onSaveClicked}
-            style={style.innterTabButton} />
+            style={styles.innterTabButton} />
         </Tab>
         <Tab label="Change State" value="color">
         <RaisedButton
           label="change"
           onClick={this.handleChangeStateClick}
-          style={style.innterTabButton} />
+          style={styles.innterTabButton} />
           <DropDownMenu
             value={this.state.selectedMenuItem}
             onChange={this.handleMenuItemChange}
-            style={style.innterTabMenu}
+            style={styles.innterTabMenu}
             selectionRenderer={(value, child) =>
               <span>{child.props.leftIcon} {child.props.primaryText}</span>}>
             {menuItemList}
@@ -82,7 +82,7 @@ class StateEditor extends Component {
   }
 }
 
-const style = {
+const styles = {
   innterTabButton: {
     display: 'inline-block',
     margin: 12,

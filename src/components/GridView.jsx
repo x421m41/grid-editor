@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import Slider from 'material-ui/Slider';
 import _ from 'lodash';
 
 class GridView extends Component {
@@ -19,6 +20,7 @@ class GridView extends Component {
       top: -1,
       bottom: -1
     };
+    this.state = {scale: 1.0};
   }
 
   componentDidMount() {
@@ -44,8 +46,9 @@ class GridView extends Component {
 
   paintCell() {
     const { gridData } = this.props;
-    const {cellWidth, cellHeight} = gridData.info;
     const ctx = this.ctx;
+    const cellWidth = gridData.info.cellWidth * this.state.scale;
+    const cellHeight = gridData.info.cellHeight * this.state.scale;
 
     let x = 0;
     let y = 0;
@@ -75,7 +78,8 @@ class GridView extends Component {
 
   paintGrid() {
     const ctx = this.ctx;
-    const {cellWidth, cellHeight} = this.props.gridData.info;
+    const cellWidth = this.props.gridData.info.cellWidth * this.state.scale;
+    const cellHeight = this.props.gridData.info.cellHeight * this.state.scale;
 
     ctx.strokeStyle = '#9E9E9E';
     ctx.lineWidth = 1.0;
@@ -100,7 +104,8 @@ class GridView extends Component {
   }
 
   paintIfSelectionChanged(left, right, top, bottom) {
-    const {cellWidth, cellHeight} = this.props.gridData.info;
+    const cellWidth = this.props.gridData.info.cellWidth * this.state.scale;
+    const cellHeight = this.props.gridData.info.cellHeight * this.state.scale;
 
     if (cellWidth === 0 || cellHeight === 0)
       return;
@@ -167,19 +172,37 @@ class GridView extends Component {
       };
   }
 
+  handleSliderValueChange = (e, val) => {
+    this.setState({scale: val});
+  }
+
   render() {
     return (
-      <canvas
-        ref={canvas => this.canvas = canvas}
-        width={800}
-        height={800}
-        onMouseDown={ e => this.handleMouseDown(e) }
-        onMouseMove={ e => this.handleMouseMove(e) }
-        onMouseUp={ e => this.handleMouseUp(e) }
-        style={{cursor: 'default'}}
-      />
+      <div>
+        <Slider
+          min={0.5}
+          max={3.0}
+          defaultValue={1.0}
+          onChange={this.handleSliderValueChange}
+          sliderStyle={styles.slider}
+          step={0.05}/>
+        <canvas
+          ref={canvas => this.canvas = canvas}
+          width={800}
+          height={800}
+          onMouseDown={ e => this.handleMouseDown(e) }
+          onMouseMove={ e => this.handleMouseMove(e) }
+          onMouseUp={ e => this.handleMouseUp(e) }
+          style={{cursor: 'default'}}
+        />
+      </div>
     );
   }
 }
-
+const styles = {
+  slider: {
+    margin: 12,
+    marginTop: 0
+  }
+}
 export default GridView;
