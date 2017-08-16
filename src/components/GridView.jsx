@@ -56,6 +56,8 @@ class GridView extends Component {
     let rowCount = 0;
 
     for (const row of gridData.map) {
+      x = 0;
+      columnCount = 0;
       for (const cell of row) {
         const color = gridData.info.state[cell.state];
         ctx.fillStyle = color;
@@ -70,9 +72,7 @@ class GridView extends Component {
         ++columnCount;
       }
       y = y + cellHeight;
-      x = 0;
       ++rowCount;
-      columnCount = 0;
     }
   }
 
@@ -185,7 +185,7 @@ class GridView extends Component {
           defaultValue={1.0}
           onChange={this.handleSliderValueChange}
           sliderStyle={styles.slider}
-          step={0.05}/>
+          step={0.01}/>
         <canvas
           ref={canvas => this.canvas = canvas}
           width={800}

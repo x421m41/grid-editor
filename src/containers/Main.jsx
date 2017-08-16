@@ -100,6 +100,7 @@ class Main extends Component {
     return (
       <div>
         <AppBar
+          title='Grid Editor'
           style={styles.appBar}
         />
         {
